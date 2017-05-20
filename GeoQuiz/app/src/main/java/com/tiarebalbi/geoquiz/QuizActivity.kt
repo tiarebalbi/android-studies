@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.view.View
 import android.widget.Button
+import android.widget.ImageButton
 import android.widget.TextView
 import android.widget.Toast
 import butterknife.ButterKnife
@@ -13,7 +14,8 @@ class QuizActivity : AppCompatActivity() {
 
     val trueButton: Button by bindView(R.id.true_button)
     val falseButton: Button by bindView(R.id.false_button)
-    val nextButton: Button by bindView(R.id.next_button)
+    val prevButton: ImageButton by bindView(R.id.previous_button)
+    val nextButton: ImageButton by bindView(R.id.next_button)
 
     val questionTextView: TextView by bindView(R.id.question_text_view)
 
@@ -46,17 +48,24 @@ class QuizActivity : AppCompatActivity() {
         // Part 2 - Adding questions
         updateQuestion()
 
-        nextButton.setOnClickListener(openNextQuestion())
+        prevButton.setOnClickListener(navToTheQuestion(0))
+        nextButton.setOnClickListener(navToTheQuestion())
 
         // Part 3 - Challenge
-        questionTextView.setOnClickListener(openNextQuestion())
+        questionTextView.setOnClickListener(navToTheQuestion())
 
 
     }
 
-    private fun openNextQuestion(): (View) -> Unit {
+    private fun navToTheQuestion(order: Int = 1): (View) -> Unit {
         return {
-            currentIndex = (currentIndex + 1) % questions.size
+            when (order) {
+                1 -> currentIndex = (currentIndex + 1) % questions.size
+                0 -> currentIndex = (currentIndex - 1) % questions.size
+            }
+
+            if (currentIndex < 0) currentIndex = questions.size - 1
+
             updateQuestion()
         }
     }
